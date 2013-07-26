@@ -20,7 +20,7 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option('-b', action='store_true', dest='noX', default=False,
                   help='no X11 windows')
-parser.add_option('-o', dest='outputFile', default='Muons5k_Half_1_Hist.root',
+parser.add_option('-o', dest='outputFile', default='Muons5k_Half_1_Hist.root', #Output file
                   help='output filename')
 parser.add_option('--ieta', dest='ieta', default=1, type='int',
                   help='target ieta')
