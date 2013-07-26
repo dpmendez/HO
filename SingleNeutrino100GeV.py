@@ -29,7 +29,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5000)
+    input = cms.untracked.int32(50)
 )
 
 # Input source
@@ -53,7 +53,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     outputCommands = process.AODSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('N5k_EtaAll_PhiAll_100GeV.root'),
+    fileName = cms.untracked.string('N5k_Eta1_Phi1_100.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('')
@@ -65,7 +65,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
 
 # Additional output definition
 process.AODSIMoutput.outputCommands.extend([
-  'keep HBHEUpgradeDigiCollection_*_*_*',
+	'keep HBHEUpgradeDigiCollection_*_*_*',
 	'keep HFUpgradeDigiCollection_*_*_*',
 	'keep *_simHcalDigis_*_*',
 	'keep *_simHcalUnsuppressedDigis_*_*',
@@ -86,28 +86,51 @@ process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
         PartID = cms.vint32(12),
 	# only in the center of tower ieta = 1, iphi = 1
-        MaxEta = cms.double(1.262),
-        MinEta = cms.double(-1.262),
-        MaxPhi = cms.double(3.14159265359),
-        MinPhi = cms.double(-3.14159265359),
+        #MaxEta = cms.double(0.0435),
+        #MinEta = cms.double(0.0435),
+        #MaxPhi = cms.double(0.0435),
+        #MinPhi = cms.double(0.0435),
 	# all over the HO area
-        # MaxEta = cms.double(1.5),
-        # MinEta = cms.double(-1.5),
-        # MaxPhi = cms.double(3.14159265359),
-        # MinPhi = cms.double(-3.14159265359),
+        MaxEta = cms.double(0.087),
+        MinEta = cms.double(0.0),
+        MaxPhi = cms.double(0.0087),
+        MinPhi = cms.double(0.0),
         MinE = cms.double(100.),
         MaxE = cms.double(100.)
     ),
     Verbosity = cms.untracked.int32(0),
-    psethack = cms.string('single neutrino E 100'),
+    psethack = cms.string('single muon E 100'),
     AddAntiParticle = cms.bool(False),
     firstRun = cms.untracked.uint32(1)
 )
 
+# add SiPMs to HO
 process.mix.digitizers.hcal.ho.pixels = cms.int32(2500)
 process.mix.digitizers.hcal.ho.siPMCode = 1
 process.mix.digitizers.hcal.ho.photoelectronsToAnalog = cms.vdouble([4.0]*16)
 
+#turn off HO ZS
+process.hcalRawData.HO = cms.untracked.InputTag("simHcalUnsuppressedDigis", "", "")
+
+#hard code conditions
+#process.es_hardcode.toGet.extend(['ChannelQuality','RespCorrs','TimeCorrs'])
+
+#ascii file conditions
+process.hcales_ascii = hcales_ascii = cms.ESSource(
+	    "HcalTextCalibrations",
+	    input = cms.VPSet(
+		cms.PSet(
+			object = cms.string('ChannelQuality'),
+			file = cms.FileInPath('usercode/HOSiPMAnalysis/data/chan_qual_0.txt')
+			),
+		cms.PSet(
+			object = cms.string('Pedestals'),
+			file = cms.FileInPath('usercode/HOSiPMAnalysis/data/db_pedestals.txt')
+			),
+	)
+)
+
+process.hcalasciiprefer = cms.ESPrefer("HcalTextCalibrations", "hcales_ascii")
 
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen)
@@ -126,3 +149,4 @@ process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.generator * getattr(process,path)._seq 
+
