@@ -29,7 +29,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(50)
+    input = cms.untracked.int32(5000)
 )
 
 # Input source
@@ -53,7 +53,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     outputCommands = process.AODSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('SingleMuon100.root'),
+    fileName = cms.untracked.string('M5k_Eta1_Phi1_100.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('')
@@ -91,10 +91,10 @@ process.generator = cms.EDProducer("FlatRandomEGunProducer",
         #MaxPhi = cms.double(0.0435),
         #MinPhi = cms.double(0.0435),
 	# all over the HO area
-        MaxEta = cms.double(1.2),
+        MaxEta = cms.double(0.087),
         MinEta = cms.double(0.),
-        MaxPhi = cms.double(0.0435),
-        MinPhi = cms.double(0.0435),
+        MaxPhi = cms.double(0.087),
+        MinPhi = cms.double(0.0),
         MinE = cms.double(100.),
         MaxE = cms.double(100.)
     ),
